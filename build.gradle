@@ -67,43 +67,69 @@ task decompile(type: Exec) {
 task updatePatch << {
     def mcpDir = "$projectDir/.mcp/src/minecraft"
 
+    //reset only the git history to the first commit in order to output only patch file
     exec {
         workingDir mcpDir
-        commandLine 'cmd', '/c', 'git checkout -B working'
+        commandLine 'cmd', '/c', 'git reset --soft First'
     }
 
+    //create a merge commit
     exec {
         workingDir mcpDir
         commandLine 'cmd', '/c', 'git merge --squash master'
     }
 
+    //commit those changes with an anonymous user
     exec {
         workingDir mcpDir
-        commandLine 'cmd', '/c', 'git commit -a -m "Minecraft patch"'
+        commandLine 'cmd', '/c', 'git commit --author="Auhtor <author@example.com>" -a -m "Minecraft patch"'
     }
 
+    //output the difference to our main project folder
     exec {
         workingDir mcpDir
-        commandLine 'cmd', '/c', 'git format-patch master --ignore-space-change -o ..'
-    }
-
-    exec {
-        workingDir mcpDir
-        commandLine 'cmd', '/c', 'git checkout working'
+        commandLine 'cmd', '/c', 'git format-patch master --ignore-space-change -o ../../..'
     }
 }
 
 task applyPatch << {
     def mcpDir = "$projectDir/.mcp/src/minecraft"
 
-    exec {
-        workingDir mcpDir
-        commandLine 'cmd', '/c', 'git checkout master'
+    //setup the custom git history for the mc code
+    if (!new File(mcpDir, ".git").exists()) {
+        //Make the first commit
+        exec {
+            workingDir mcpDir
+            commandLine 'cmd', '/c', 'git init'
+        }
+
+        exec {
+            workingDir mcpDir
+            commandLine 'cmd', '/c', 'git add .'
+        }
+
+        exec {
+            workingDir mcpDir
+            commandLine 'cmd', '/c', 'git commit -m "First"'
+        }
+
+        //save this point in order to restore it to make a complete diff every time
+        exec {
+            workingDir mcpDir
+            commandLine 'cmd', '/c', 'git tag -a -m "-" First'
+        }
+
+        //make a working branch where we can include our changes
+        exec {
+            workingDir mcpDir
+            commandLine 'cmd', '/c', 'git checkout -b working'
+        }
     }
 
+    //apply the patches
     exec {
         workingDir mcpDir
-        commandLine 'cmd', '/c', 'git apply --ignore-space-change --ignore-whitespace ../0001-Minecraft-patch.patch'
+        commandLine 'cmd', '/c', 'git apply --ignore-space-change --ignore-whitespace ../../../0001-Minecraft-patch.patch'
     }
 }
 
