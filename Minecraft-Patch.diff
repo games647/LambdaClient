@@ -1,12 +1,3 @@
-From 10015d8f60f66acdb0bba7a86b7167a84d66ccac Mon Sep 17 00:00:00 2001
-From: Auhtor <author@example.com>
-Date: Thu, 6 Oct 2016 20:05:43 +0200
-Subject: [PATCH] Minecraft patch
-
----
- net/minecraft/block/BlockAir.java | 1 +
- 1 file changed, 1 insertion(+)
-
 diff --git a/net/minecraft/block/BlockAir.java b/net/minecraft/block/BlockAir.java
 index 12bb353..b619f9c 100644
 --- a/net/minecraft/block/BlockAir.java
@@ -19,5 +10,3 @@ index 12bb353..b619f9c 100644
          return EnumBlockRenderType.INVISIBLE;
      }
  
---
-

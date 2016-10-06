@@ -70,25 +70,19 @@ task updatePatch << {
     //reset only the git history to the first commit in order to output only patch file
     exec {
         workingDir mcpDir
-        commandLine 'cmd', '/c', 'git reset --soft First'
+        commandLine 'cmd', '/c', 'git diff First > ../../../Minecraft-Patch.diff'
     }
 
     //create a merge commit
     exec {
         workingDir mcpDir
-        commandLine 'cmd', '/c', 'git merge --squash master'
+        commandLine 'cmd', '/c', 'git reset --soft First'
     }
 
     //commit those changes with an anonymous user
     exec {
         workingDir mcpDir
         commandLine 'cmd', '/c', 'git commit --author="Auhtor <author@example.com>" -a -m "Minecraft patch"'
-    }
-
-    //output the difference to our main project folder
-    exec {
-        workingDir mcpDir
-        commandLine 'cmd', '/c', 'git format-patch master --ignore-space-change -o ../../..'
     }
 }
 
@@ -118,18 +112,12 @@ task applyPatch << {
             workingDir mcpDir
             commandLine 'cmd', '/c', 'git tag -a -m "-" First'
         }
-
-        //make a working branch where we can include our changes
-        exec {
-            workingDir mcpDir
-            commandLine 'cmd', '/c', 'git checkout -b working'
-        }
     }
 
     //apply the patches
     exec {
         workingDir mcpDir
-        commandLine 'cmd', '/c', 'git apply --ignore-space-change --ignore-whitespace ../../../0001-Minecraft-patch.patch'
+        commandLine 'cmd', '/c', 'git apply ../../../Minecraft-Patch.diff'
     }
 }
 
