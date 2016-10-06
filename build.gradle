@@ -58,6 +58,55 @@ task decompile(type: Exec) {
     }
 }
 
+/**
+ * Branches and their meaning:
+ *
+ * Master => normal Minecraft code without changes
+ * Working => Code including modifications
+ */
+task updatePatch << {
+    def mcpDir = "$projectDir/.mcp/src/minecraft"
+
+    exec {
+        workingDir mcpDir
+        commandLine 'cmd', '/c', 'git checkout -B working'
+    }
+
+    exec {
+        workingDir mcpDir
+        commandLine 'cmd', '/c', 'git merge --squash master'
+    }
+
+    exec {
+        workingDir mcpDir
+        commandLine 'cmd', '/c', 'git commit -a -m "Minecraft patch"'
+    }
+
+    exec {
+        workingDir mcpDir
+        commandLine 'cmd', '/c', 'git format-patch master --ignore-space-change -o ..'
+    }
+
+    exec {
+        workingDir mcpDir
+        commandLine 'cmd', '/c', 'git checkout working'
+    }
+}
+
+task applyPatch << {
+    def mcpDir = "$projectDir/.mcp/src/minecraft"
+
+    exec {
+        workingDir mcpDir
+        commandLine 'cmd', '/c', 'git checkout master'
+    }
+
+    exec {
+        workingDir mcpDir
+        commandLine 'cmd', '/c', 'git apply --ignore-space-change --ignore-whitespace ../0001-Minecraft-patch.patch'
+    }
+}
+
 task run(type: Exec) {
     def workingDir = "$projectDir/.mcp"
     if (System.getProperty('os.name').toLowerCase().contains('windows')) {

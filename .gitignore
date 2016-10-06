@@ -1,4 +1,5 @@
 # Project related
+# We are not allowed to host MCP or the Minecraft Source code
 mcp*.zip
 .mcp
 

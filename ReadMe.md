@@ -25,7 +25,7 @@ folder into your /.minecraft/versions folder. Restart your launcher and select l
 This project uses Gradle for automatic, OS- (Linux, Unix, Windows) and IDE-independent project setup. 
 All three leading IDEs supports gradle (Netbeans, Jetbrains, Eclipse). 
 
-1. Run `gradlew downloadMcp unzipMcp decompile`
+1. Run `gradlew downloadMcp unzipMcp decompile applayPatch`
 
 ### Other useful Gradle commands
 
