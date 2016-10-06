@@ -7,7 +7,7 @@ Nothing at the moment
 ## Project aims
 
 * Easy project setup for easy contributions to this project
-* Make use of the newest libraries (i.e. Java 8 or upgrading Guava)
+* Make use of the newest libraries (i.e. Java 8)
 * Open Source
 
 ## Features
@@ -30,5 +30,4 @@ All three leading IDEs supports gradle (Netbeans, Jetbrains, Eclipse).
 
 ### Other useful Gradle commands
 
-//Planning
-* `gradle install` - Installs the version into your local Minecraft installation
+* `gradlew install` - Installs the version into your local Minecraft installation

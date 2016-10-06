@@ -39,7 +39,6 @@ task downloadMcp(type: Download) {
 
     src 'http://www.modcoderpack.com/website/sites/default/files/releases/mcp' + version + '.zip'
     dest 'mcp' + version + '.zip'
-    onlyIfNewer true
 }
 
 task unzipMcp(type: Copy) {
@@ -66,4 +65,39 @@ task run(type: Exec) {
     } else {
         commandLine 'sh', '-c', 'startclient.sh'
     }
+}
+
+task install(type: Copy) {
+    def fromFile = file('.mcp/jars/versions/1.10')
+    def outputDir = new File(getMinecraftFolder(), "versions/" + project.name + '-' + version);
+
+    from fromFile
+    into outputDir
+    rename {
+        String fileName -> fileName.replace("1.10", project.name + '-' + version)
+    }
+
+    filter{
+        it.replace('"id": "1.10"', '"id": "' + project.name + '-' + version +'"')
+    }
+}
+
+def File getMinecraftFolder() {
+    String userHome = System.getProperty("user.home", ".");
+    File result;
+
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        String applicationData = System.getenv("APPDATA")
+        String folder = applicationData != null ? applicationData : userHome
+        result = new File(folder, ".minecraft/")
+    } else if (System.getProperty('os.name').toLowerCase().contains('macos')) {
+        result = new File(userHome, "Library/Application Support/minecraft")
+    } else if (System.getProperty('os.name').toLowerCase().contains('linux')
+            || System.getProperty('os.name').toLowerCase().contains('solaris')) {
+        result = new File(userHome, ".minecraft/")
+    } else {
+        result = new File(userHome, "minecraft/");
+    }
+
+    return result
 }
