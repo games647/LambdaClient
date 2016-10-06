@@ -1,3 +1,8 @@
+plugins {
+    id 'java'
+    id 'de.undercouch.download' version '3.1.1'
+}
+
 group 'com.github.games647'
 version '1.0-SNAPSHOT'
 
@@ -7,14 +12,58 @@ task wrapper(type: Wrapper) {
   distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
 
-apply plugin: 'java'
-
 sourceCompatibility = 1.8
 
+sourceSets {
+    main {
+        java {
+            srcDirs = ["src/main/java", ".mcp/src/minecraft"]
+        }
+    }
+}
+
+//dependencies
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    compile fileTree(dir: '.mcp/jars/libraries/', include: '**/*.jar')
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+//tasks
+import de.undercouch.gradle.tasks.download.Download
+task downloadMcp(type: Download) {
+    def version = 931
+
+    src 'http://www.modcoderpack.com/website/sites/default/files/releases/mcp' + version + '.zip'
+    dest 'mcp' + version + '.zip'
+    onlyIfNewer true
+}
+
+task unzipMcp(type: Copy) {
+    def zipFile = file('mcp.zip')
+    def outputDir = file(".mcp")
+
+    from zipTree(zipFile)
+    into outputDir
+}
+
+task decompile(type: Exec) {
+    def workingDir = "$projectDir/.mcp"
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'decompile.bat'
+    } else {
+        commandLine 'sh', '-c', 'decompile.sh'
+    }
+}
+
+task run(type: Exec) {
+    def workingDir = "$projectDir/.mcp"
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'startclient.bat'
+    } else {
+        commandLine 'sh', '-c', 'startclient.sh'
+    }
 }
