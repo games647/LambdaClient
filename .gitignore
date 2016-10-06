@@ -1,0 +1,27 @@
+# Gradle
+.gradle
+/build
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# IDE-Configurations
+
+# Netbeans
+/.nb-gradle
+/target/
+/nbproject/
+/nbactions-deployer.xml
+/nb-configuration.xml
+
+# Eclipse
+/.classpath
+/.project
+/.settings
+
+# Jetbrains
+*.iml
+/.idea
