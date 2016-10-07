@@ -36,21 +36,22 @@ dependencies {
 import de.undercouch.gradle.tasks.download.Download
 task downloadMcp(type: Download) {
     def version = 931
+    download {
+        src 'http://www.modcoderpack.com/website/sites/default/files/releases/mcp' + version + '.zip'
+        dest 'mcp' + version + '.zip'
+    }
 
-    src 'http://www.modcoderpack.com/website/sites/default/files/releases/mcp' + version + '.zip'
-    dest 'mcp' + version + '.zip'
-}
+    copy {
+        def zipFile = file('mcp' + version +'.zip')
+        def outputDir = file(".mcp")
 
-task unzipMcp(type: Copy) {
-    def zipFile = file('mcp.zip')
-    def outputDir = file(".mcp")
-
-    from zipTree(zipFile)
-    into outputDir
+        from zipTree(zipFile)
+        into outputDir
+    }
 }
 
 task decompile(type: Exec) {
-    def workingDir = "$projectDir/.mcp"
+    def workingDir = ".mcp"
     if (System.getProperty('os.name').toLowerCase().contains('windows')) {
         commandLine 'cmd', '/c', 'decompile.bat'
     } else {
@@ -62,10 +63,9 @@ task decompile(type: Exec) {
  * Branches and their meaning:
  *
  * Master => normal Minecraft code without changes
- * Working => Code including modifications
  */
 task updatePatch << {
-    def mcpDir = "$projectDir/.mcp/src/minecraft"
+    def mcpDir = ".mcp/src/minecraft"
 
     //reset only the git history to the first commit in order to output only patch file
     exec {
@@ -87,7 +87,7 @@ task updatePatch << {
 }
 
 task applyPatch << {
-    def mcpDir = "$projectDir/.mcp/src/minecraft"
+    def mcpDir = ".mcp/src/minecraft"
 
     //setup the custom git history for the mc code
     if (!new File(mcpDir, ".git").exists()) {
@@ -122,7 +122,7 @@ task applyPatch << {
 }
 
 task run(type: Exec) {
-    def workingDir = "$projectDir/.mcp"
+    def workingDir = ".mcp"
     if (System.getProperty('os.name').toLowerCase().contains('windows')) {
         commandLine 'cmd', '/c', 'startclient.bat'
     } else {
@@ -132,16 +132,17 @@ task run(type: Exec) {
 
 task install(type: Copy) {
     def fromFile = file('.mcp/jars/versions/1.10')
-    def outputDir = new File(getMinecraftFolder(), "versions/" + project.name + '-' + version);
+    def clientName = project.name + '-' + version;
+    def outputDir = new File(getMinecraftFolder(), "versions/" + clientName);
 
     from fromFile
     into outputDir
     rename {
-        String fileName -> fileName.replace("1.10", project.name + '-' + version)
+        String fileName -> fileName.replace("1.10", clientName)
     }
 
-    filter{
-        it.replace('"id": "1.10"', '"id": "' + project.name + '-' + version +'"')
+    filter {
+        it.replace('"id": "1.10"', '"id": "' + clientName + '"')
     }
 }
 
