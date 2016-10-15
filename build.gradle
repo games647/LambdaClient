@@ -60,9 +60,8 @@ task decompile(type: Exec) {
 }
 
 /**
- * Branches and their meaning:
- *
- * Master => normal Minecraft code without changes
+ * Branch: Master => Minecraft code with changes from the latest applyPatch
+ * Tag: First -> Minecraft code without changes
  */
 task updatePatch << {
     def mcpDir = ".mcp/src/minecraft"
@@ -150,17 +149,17 @@ def File getMinecraftFolder() {
     String userHome = System.getProperty("user.home", ".");
     File result;
 
-    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+    def osName = System.getProperty('os.name').toLowerCase()
+    if (osName.contains('windows')) {
         String applicationData = System.getenv("APPDATA")
         String folder = applicationData != null ? applicationData : userHome
         result = new File(folder, ".minecraft/")
-    } else if (System.getProperty('os.name').toLowerCase().contains('macos')) {
+    } else if (osName.contains('macos')) {
         result = new File(userHome, "Library/Application Support/minecraft")
-    } else if (System.getProperty('os.name').toLowerCase().contains('linux')
-            || System.getProperty('os.name').toLowerCase().contains('solaris')) {
+    } else if (osName.contains('linux') || osName.contains('solaris')) {
         result = new File(userHome, ".minecraft/")
     } else {
-        result = new File(userHome, "minecraft/");
+        result = new File(userHome, "minecraft/")
     }
 
     return result
