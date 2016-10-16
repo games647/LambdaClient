@@ -69,7 +69,7 @@ task updatePatch << {
     //reset only the git history to the first commit in order to output only patch file
     exec {
         workingDir mcpDir
-        commandLine 'cmd', '/c', 'git diff First > ../../../Minecraft-Patch.diff'
+        commandLine 'cmd', '/c', 'git diff --ignore-space-change First > ../../../Minecraft-Patch.diff'
     }
 
     //create a merge commit
